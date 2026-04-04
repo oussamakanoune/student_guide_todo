@@ -259,20 +259,26 @@ class _TaskFormSheetState extends State<TaskFormSheet>
 _buildSectionLabel('Reminder', Icons.notifications_rounded, isDark),
 const SizedBox(height: 10),
 
-DropdownButtonFormField<int>(
-  value: _remindBeforeMinutes,
+DropdownButtonFormField<int?>(
+  value: _remindBeforeMinutes == 0 ? null : _remindBeforeMinutes,
   decoration: const InputDecoration(
     border: OutlineInputBorder(),
   ),
-  items: [5, 10, 15, 30, 60].map((minutes) {
-    return DropdownMenuItem(
-      value: minutes,
-      child: Text('$minutes minutes before'),
-    );
-  }).toList(),
+  items: [
+    const DropdownMenuItem(
+      value: null,
+      child: Text('🔕 No Notification'),
+    ),
+    ...[5, 10, 15, 30, 60].map((minutes) {
+      return DropdownMenuItem(
+        value: minutes,
+        child: Text('⏰ $minutes minutes before'),
+      );
+    }).toList(),
+  ],
   onChanged: (value) {
     setState(() {
-      _remindBeforeMinutes = value!;
+      _remindBeforeMinutes = value ?? 0;
     });
   },
 ),

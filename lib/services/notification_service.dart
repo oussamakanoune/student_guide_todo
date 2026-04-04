@@ -20,11 +20,11 @@ class NotificationService {
     const InitializationSettings settings =
         InitializationSettings(android: androidSettings);
 
-await _plugin.initialize(
-  settings: settings,
-  onDidReceiveNotificationResponse:
-      (NotificationResponse response) async {},
-);
+    await _plugin.initialize(
+      settings: 
+      settings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {},
+    );
   }
 
   Future<void> requestPermission() async {
@@ -35,17 +35,25 @@ await _plugin.initialize(
   }
 
   Future<void> scheduleTaskNotification(Task task) async {
+    // ❌ لو مفيش تاريخ أصلاً → ما تعملش حاجة
     if (task.dueDate == null) return;
 
+    // ❌ لو المستخدم اختار "No Notification" → ما تعملش حاجة
+    if (task.remindBeforeMinutes == 0) return;
+
+    // ❌ لو مفيش وقت محدد (ساعة) → ما تعملش حاجة
+    if (task.dueTime == null) return;
+
+    // ✅ دلوقتي عندنا: تاريخ + وقت + المستخدم عايز نوتيفيكيشن
     final dueDate = task.dueDate!;
-    final dueTime = task.dueTime;
+    final dueTime = task.dueTime!;
 
     final scheduledDate = DateTime(
       dueDate.year,
       dueDate.month,
       dueDate.day,
-      dueTime?.hour ?? 9,
-      dueTime?.minute ?? 0,
+      dueTime.hour,
+      dueTime.minute,
     );
 
     const details = NotificationDetails(
@@ -62,21 +70,21 @@ await _plugin.initialize(
     final notifyTime =
         scheduledDate.subtract(Duration(minutes: task.remindBeforeMinutes));
 
-    // 🔥 قبل 30 دقيقة
+    // 🔥 نوتيفيكيشن قبل الموعد
     if (notifyTime.isAfter(DateTime.now())) {
-      await _plugin.zonedSchedule(
-        id: task.id.hashCode % 100000,
-        title: '⏰ Task Due Soon!',
-        body: '"${task.title}" is due in 30 minutes!',
-        scheduledDate: tz.TZDateTime.from(notifyTime, tz.local),
-        notificationDetails: details,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
+await _plugin.zonedSchedule(
+  id: task.id.hashCode % 100000,
+  title: '⏰ Task Due Soon!',
+  body: '"${task.title}" is due in ${task.remindBeforeMinutes} minutes!',
+  scheduledDate: tz.TZDateTime.from(notifyTime, tz.local),
+  notificationDetails: details,
+  androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+);
     }
 
-    // 🔥 وقت التسليم
+    // 🔥 نوتيفيكيشن وقت التسليم
     if (scheduledDate.isAfter(DateTime.now())) {
-      await _plugin.zonedSchedule(
+ await _plugin.zonedSchedule(
         id: (task.id.hashCode + 1) % 100000,
         title: '🔔 Task Deadline!',
         body: '"${task.title}" is due now!',
@@ -88,7 +96,7 @@ await _plugin.initialize(
   }
 
   Future<void> cancelTaskNotification(String taskId) async {
-    await _plugin.cancel(id: taskId.hashCode % 100000);
+    await _plugin.cancel(id:taskId.hashCode % 100000);
     await _plugin.cancel(id: (taskId.hashCode + 1) % 100000);
   }
 

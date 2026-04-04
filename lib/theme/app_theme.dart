@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // \u2500\u2500\u2500 Brand Colors \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  static const Color primaryColor = Color(0xFF6C63FF);
-  static const Color primaryLight = Color(0xFF9D97FF);
-  static const Color primaryDark = Color(0xFF4B44CC);
+static const Color primaryColor = Color(0xFF2F27CE);
+static const Color primaryLight = Color(0xFF5449DB);
+static const Color primaryDark = Color(0xFF1F19A3);
 
 
   static const Color secondaryColor = Color(0xFF03DAC6);
@@ -34,7 +34,7 @@ class AppTheme {
 
 
   // \u2500\u2500\u2500 Category Colors \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  static const Color catStudy = Color(0xFF6C63FF);
+  static const Color catStudy = Color(0xFF2F27CE);
   static const Color catAssignment = Color(0xFFEC4899);
   static const Color catExam = Color(0xFFEF4444);
   static const Color catProject = Color(0xFFF59E0B);
@@ -44,18 +44,18 @@ class AppTheme {
 
 
   // \u2500\u2500\u2500 Gradient \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF6C63FF), Color(0xFF9D97FF)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+static const LinearGradient primaryGradient = LinearGradient(
+  colors: [Color(0xFF2F27CE), Color(0xFF5449DB)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
 
 
-  static const LinearGradient headerGradient = LinearGradient(
-    colors: [Color(0xFF6C63FF), Color(0xFF8B5CF6)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+ static const LinearGradient headerGradient = LinearGradient(
+  colors: [Color(0xFF2F27CE), Color(0xFF5449DB)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
 
 
   // \u2500\u2500\u2500 Shadows \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500

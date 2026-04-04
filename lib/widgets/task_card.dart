@@ -153,7 +153,7 @@ return Padding(
         ),
         child: Stack(
           children: [
-            // \u2500\u2500 Priority left bar \u2500\u2500
+            // ── Priority left bar ──
             if (!task.isCompleted)
               Positioned(
                 left: 0,
@@ -172,24 +172,24 @@ return Padding(
               ),
 
 
-        // \u2500\u2500 Main content \u2500\u2500
+        // ── Main content ──
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // \u2500\u2500 Checkbox \u2500\u2500
+              // ── Checkbox ──
               _buildCheckbox(task, categoryColor),
               const SizedBox(width: 12),
 
-              // \u2500\u2500 Task info \u2500\u2500
+              // ── Task info ──
               Expanded(
                 child: _buildTaskInfo(
                     context, task, isDark, categoryColor, dueDateStatus),
               ),
 
-              // \u2500\u2500 Right actions \u2500\u2500
-              _buildRightActions(context, task, isDark),
+              // ── Right actions ──
+              _buildRightActions(context, task, isDark, categoryColor),
             ],
           ),
         ),
@@ -254,7 +254,7 @@ return Padding(
 return Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    // \u2500\u2500 Category chip \u2500\u2500
+    // ── Category chip ──
     Row(
       children: [
         Container(
@@ -297,7 +297,7 @@ return Column(
     ),
     const SizedBox(height: 7),
 
-    // \u2500\u2500 Title \u2500\u2500
+    // ── Title ──
     Text(
       task.title,
       style: TextStyle(
@@ -315,7 +315,7 @@ return Column(
       overflow: TextOverflow.ellipsis,
     ),
 
-    // \u2500\u2500 Description \u2500\u2500
+    // ── Description ──
     if (task.description != null &&
         task.description!.isNotEmpty) ...[
       const SizedBox(height: 4),
@@ -331,7 +331,7 @@ return Column(
       ),
     ],
 
-    // \u2500\u2500 Sub-tasks progress \u2500\u2500
+    // ── Sub-tasks progress ──
     if (task.subTasks.isNotEmpty) ...[
       const SizedBox(height: 8),
       _buildSubTaskProgress(task, isDark, categoryColor),
@@ -339,7 +339,7 @@ return Column(
 
     const SizedBox(height: 8),
 
-    // \u2500\u2500 Footer row: due date + priority \u2500\u2500
+    // ── Footer row: due date + priority ──
     _buildFooterRow(task, isDark, dueDateStatus),
   ],
 );
@@ -403,17 +403,17 @@ return Wrap(
   spacing: 6,
   runSpacing: 4,
   children: [
-    // \u2500\u2500 Due date badge \u2500\u2500
+    // ── Due date badge ──
     if (showDueDate)
       _buildBadge(
         icon: _getDueDateIcon(dueDateStatus),
-        label: TaskDateUtils.formatDueDate(context,task.dueDate!,
+        label: TaskDateUtils.formatDueDate(context, task.dueDate!,
             time: task.dueTime),
         color: _getDueDateColor(dueDateStatus),
         isDark: isDark,
       ),
 
-    // \u2500\u2500 Priority badge \u2500\u2500
+    // ── Priority badge ──
     if (!task.isCompleted)
       _buildBadge(
         icon: priorityIcon,
@@ -458,25 +458,63 @@ return Wrap(
   }
 
 
-  Widget _buildRightActions(BuildContext context, Task task, bool isDark) {
+  Widget _buildRightActions(BuildContext context, Task task, bool isDark, Color categoryColor) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // \u2500\u2500 Star button \u2500\u2500
+        // ── Star button with 3D effect ──
         GestureDetector(
           onTap: () =>
               context.read<TaskProvider>().toggleStarred(task.id),
-          child: AnimatedSwitcher(
+          child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            child: Icon(
-              task.isStarred ? Icons.star_rounded : Icons.star_border_rounded,
-              key: ValueKey(task.isStarred),
-              size: 22,
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              // ── Background: adapts to starred state & theme ──
               color: task.isStarred
-                  ? const Color(0xFFF59E0B)
+                  ? const Color(0xFFF59E0B).withOpacity(0.15)
                   : (isDark
-                      ? AppTheme.textSecondaryDark
-                      : AppTheme.textSecondaryLight),
+                      ? AppTheme.surfaceDark
+                      : Colors.grey.shade100),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: task.isStarred
+                    ? const Color(0xFFF59E0B).withOpacity(0.4)
+                    : (isDark
+                        ? Colors.white.withOpacity(0.08)
+                        : Colors.grey.shade300),
+                width: 1,
+              ),
+              boxShadow: [
+                // ── Shadow below (3D depth) ──
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.12),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+                // ── Light on top (3D highlight) ──
+                BoxShadow(
+                  color: Colors.white.withOpacity(isDark ? 0.05 : 0.8),
+                  blurRadius: 3,
+                  offset: const Offset(0, -1),
+                ),
+              ],
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                task.isStarred
+                    ? Icons.star_rounded
+                    : Icons.star_border_rounded,
+                key: ValueKey(task.isStarred),
+                size: 18,
+                color: task.isStarred
+                    ? const Color(0xFFF59E0B)
+                    : (isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight),
+              ),
             ),
           ),
         ),

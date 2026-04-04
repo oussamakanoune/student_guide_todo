@@ -34,11 +34,11 @@ return Scaffold(
       isDark ? AppTheme.backgroundDark : AppTheme.backgroundLight,
   body: CustomScrollView(
     slivers: [
-      // \u2500\u2500 App bar \u2500\u2500
+      // ── App bar ──
       _buildSliverAppBar(
           context, liveTask, isDark, categoryColor),
 
-      // \u2500\u2500 Content \u2500\u2500
+      // ── Content ──
       SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
@@ -47,12 +47,12 @@ return Scaffold(
             children: [
               const SizedBox(height: 20),
 
-              // \u2500\u2500 Status + Priority row \u2500\u2500
+              // ── Status + Priority row ──
               _buildStatusRow(
                   context, liveTask, isDark, categoryColor, priorityColor),
               const SizedBox(height: 20),
 
-              // \u2500\u2500 Description \u2500\u2500
+              // ── Description ──
               if (liveTask.description != null &&
                   liveTask.description!.isNotEmpty) ...[
                 _buildSection(
@@ -65,7 +65,7 @@ return Scaffold(
                 const SizedBox(height: 20),
               ],
 
-              // \u2500\u2500 Due date \u2500\u2500
+              // ── Due date ──
               if (liveTask.dueDate != null) ...[
                 _buildSection(
                   context,
@@ -77,7 +77,7 @@ return Scaffold(
                 const SizedBox(height: 20),
               ],
 
-              // \u2500\u2500 Sub-tasks \u2500\u2500
+              // ── Sub-tasks ──
               if (liveTask.subTasks.isNotEmpty) ...[
                 _buildSection(
                   context,
@@ -91,7 +91,7 @@ return Scaffold(
                 const SizedBox(height: 20),
               ],
 
-              // \u2500\u2500 Meta info \u2500\u2500
+              // ── Meta info ──
               _buildSection(
                 context,
                 isDark,
@@ -102,7 +102,7 @@ return Scaffold(
               ),
               const SizedBox(height: 28),
 
-              // \u2500\u2500 Danger zone \u2500\u2500
+              // ── Danger zone ──
               _buildDangerZone(context, liveTask, isDark),
             ],
           ),
@@ -111,7 +111,7 @@ return Scaffold(
     ],
   ),
 
-  // \u2500\u2500 FAB: mark complete \u2500\u2500
+  // ── FAB: mark complete ──
   floatingActionButton: _buildCompleteFAB(context, liveTask, isDark),
   floatingActionButtonLocation:
       FloatingActionButtonLocation.centerFloat,
@@ -120,7 +120,7 @@ return Scaffold(
   }
 
 
-  // \u2500\u2500\u2500 Sliver App Bar \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Sliver App Bar ───────────────────────────────────────────────────────
 
 
   Widget _buildSliverAppBar(
@@ -138,23 +138,61 @@ return Scaffold(
         child: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            // ── 3D effect: darker background for contrast ──
+            color: Colors.black.withOpacity(0.25),
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.15),
+              width: 1,
+            ),
+            boxShadow: [
+              // ── Shadow below (gives depth) ──
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+              // ── Light on top (gives 3D feel) ──
+              BoxShadow(
+                color: Colors.white.withOpacity(0.15),
+                blurRadius: 4,
+                offset: const Offset(0, -1),
+              ),
+            ],
           ),
           child: const Icon(Icons.arrow_back_ios_new_rounded,
               color: Colors.white, size: 18),
         ),
       ),
       actions: [
-        // \u2500\u2500 Star toggle \u2500\u2500
+        // ── Star toggle ──
         GestureDetector(
           onTap: () =>
               context.read<TaskProvider>().toggleStarred(task.id),
           child: Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              // ── 3D effect: darker background for contrast ──
+              color: Colors.black.withOpacity(0.25),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.15),
+                width: 1,
+              ),
+              boxShadow: [
+                // ── Shadow below (gives depth) ──
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+                // ── Light on top (gives 3D feel) ──
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.15),
+                  blurRadius: 4,
+                  offset: const Offset(0, -1),
+                ),
+              ],
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -170,14 +208,33 @@ return Scaffold(
             ),
           ),
         ),
-        // \u2500\u2500 Edit button \u2500\u2500
+        // ── Edit button ──
         GestureDetector(
           onTap: () => _openEditSheet(context, task),
           child: Container(
             margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              // ── 3D effect: darker background for contrast ──
+              color: Colors.black.withOpacity(0.25),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.15),
+                width: 1,
+              ),
+              boxShadow: [
+                // ── Shadow below (gives depth) ──
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+                // ── Light on top (gives 3D feel) ──
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.15),
+                  blurRadius: 4,
+                  offset: const Offset(0, -1),
+                ),
+              ],
             ),
             child: const Padding(
               padding: EdgeInsets.all(8),
@@ -206,7 +263,7 @@ return Scaffold(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // \u2500\u2500 Category badge \u2500\u2500
+                  // ── Category badge ──
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 4),
@@ -226,7 +283,7 @@ return Scaffold(
                   const SizedBox(height: 8),
 
 
-              // \u2500\u2500 Title \u2500\u2500
+              // ── Title ──
               Text(
                 task.title,
                 style: TextStyle(
@@ -253,7 +310,7 @@ return Scaffold(
   }
 
 
-  // \u2500\u2500\u2500 Status Row \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Status Row ───────────────────────────────────────────────────────────
 
 
   Widget _buildStatusRow(
@@ -305,7 +362,7 @@ return Row(
   }
 
 
-  // \u2500\u2500\u2500 Description Card \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Description Card ─────────────────────────────────────────────────────
 
 
   Widget _buildDescriptionCard(Task task, bool isDark) {
@@ -331,7 +388,7 @@ return Row(
   }
 
 
-  // \u2500\u2500\u2500 Due Date Card \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Due Date Card ────────────────────────────────────────────────────────
 
 
   Widget _buildDueDateCard( BuildContext context, task, bool isDark) {
@@ -389,7 +446,7 @@ return Container(
             if (task.dueTime != null) ...[
               const SizedBox(height: 2),
               Text(
-                '\u23f0 ${task.dueTime!.format(context)}',
+                '⏰ ${task.dueTime!.format(context)}',
                 style: TextStyle(
                   fontSize: 13,
                   color: isDark
@@ -429,7 +486,7 @@ return Container(
   }
 
 
-  // \u2500\u2500\u2500 Sub-tasks Card \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Sub-tasks Card ───────────────────────────────────────────────────────
 
 
   Widget _buildSubTasksCard(
@@ -547,7 +604,7 @@ return Container(
   }
 
 
-  // \u2500\u2500\u2500 Meta Info Card \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Meta Info Card ───────────────────────────────────────────────────────
 
 
   Widget _buildMetaCard(Task task, bool isDark, Color categoryColor) {
@@ -616,7 +673,7 @@ return Container(
   }
 
 
-  // \u2500\u2500\u2500 Danger Zone \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Danger Zone ──────────────────────────────────────────────────────────
 
 
   Widget _buildDangerZone(
@@ -711,7 +768,7 @@ return Container(
   }
 
 
-  // \u2500\u2500\u2500 FAB \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── FAB ─────────────────────────────────────────────────────────────────
 
 
   Widget _buildCompleteFAB(
@@ -757,7 +814,7 @@ return Container(
   }
 
 
-  // \u2500\u2500\u2500 Section Wrapper \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Section Wrapper ──────────────────────────────────────────────────────
 
 
   Widget _buildSection(
@@ -793,7 +850,7 @@ return Container(
   }
 
 
-  // \u2500\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Actions ──────────────────────────────────────────────────────────────
 
 
   void _openEditSheet(BuildContext context, Task task) {
@@ -891,7 +948,7 @@ showDialog(
 }
 
 
-// \u2500\u2500\u2500 Info Chip \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Info Chip ────────────────────────────────────────────────────────────────
 
 
 class _InfoChip extends StatelessWidget {
@@ -937,7 +994,7 @@ class _InfoChip extends StatelessWidget {
 }
 
 
-// \u2500\u2500\u2500 Meta Row \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Meta Row ─────────────────────────────────────────────────────────────────
 
 
 class _MetaRow extends StatelessWidget {
