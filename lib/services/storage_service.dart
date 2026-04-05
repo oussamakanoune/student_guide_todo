@@ -11,14 +11,20 @@ class StorageService {
   static const String _pendingSyncKey = 'student_guide_pending_sync';
 
   // ─── Base URL ─────────────────────────────────────────────
-  // Change this to your backend URL
-  static const String _baseUrl = 'https://api.yourdomain.com/api/v1';
+  static const String _baseUrl = 'http://api.talabadz.com/todolist';
+
+  // ─── Token ────────────────────────────────────────────────
+  // ⚠️ أي token يشتغل الحين لأن الـ backend يقبل أي شيء
+  static const String _token = 'Bearer test-token';
 
   final Dio _dio = Dio(BaseOptions(
     baseUrl: _baseUrl,
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': _token,
+    },
   ));
 
   // ─── Internet Check ───────────────────────────────────────
@@ -36,69 +42,52 @@ class StorageService {
   // TASKS
   // ══════════════════════════════════════════════════════════
 
-  /// Load tasks:
-  /// Online  → fetch from server + save locally
-  /// Offline → load from local
   Future<List<Task>> loadTasks() async {
     try {
       final online = await _isOnline();
 
       if (online) {
-        // ── Online: get from server ──
         try {
           final response = await _dio.get('/tasks');
           if (response.statusCode == 200) {
-            final List<dynamic> tasksList =
-                response.data['data']['tasks'];
+            final List<dynamic> tasksList = response.data['data']['tasks'];
             final tasks = tasksList
                 .map((t) => Task.fromMap(Map<String, dynamic>.from(t)))
                 .toList();
-            // Save to local as backup
             await _saveLocalTasks(tasks);
-            // Sync any pending offline changes
             await _syncPending();
             return tasks;
           }
         } catch (e) {
-          // Server error → fallback to local
           return await _loadLocalTasks();
         }
       }
 
-      // ── Offline: get from local ──
       return await _loadLocalTasks();
     } catch (e) {
       return [];
     }
   }
 
-  /// Save tasks (always saves locally)
   Future<bool> saveTasks(List<Task> tasks) async {
     return await _saveLocalTasks(tasks);
   }
 
-  /// Add a single task:
-  /// Online  → send to server + save locally
-  /// Offline → save locally + add to pending sync
   Future<bool> addTask(Task task) async {
     try {
       final online = await _isOnline();
 
-      // Always save locally first
       final tasks = await _loadLocalTasks();
       tasks.insert(0, task);
       await _saveLocalTasks(tasks);
 
       if (online) {
-        // ── Online: send to server ──
         try {
           await _dio.post('/tasks', data: task.toMap());
         } catch (e) {
-          // Failed to send → add to pending sync
           await _addToPending('add', task.toMap());
         }
       } else {
-        // ── Offline: add to pending sync ──
         await _addToPending('add', task.toMap());
       }
 
@@ -108,14 +97,10 @@ class StorageService {
     }
   }
 
-  /// Update a task:
-  /// Online  → update on server + update locally
-  /// Offline → update locally + add to pending sync
   Future<bool> updateTask(Task updatedTask) async {
     try {
       final online = await _isOnline();
 
-      // Always update locally first
       final tasks = await _loadLocalTasks();
       final index = tasks.indexWhere((t) => t.id == updatedTask.id);
       if (index != -1) {
@@ -124,15 +109,12 @@ class StorageService {
       }
 
       if (online) {
-        // ── Online: send to server ──
         try {
-          await _dio.put('/tasks/${updatedTask.id}',
-              data: updatedTask.toMap());
+          await _dio.put('/tasks/${updatedTask.id}', data: updatedTask.toMap());
         } catch (e) {
           await _addToPending('update', updatedTask.toMap());
         }
       } else {
-        // ── Offline: add to pending sync ──
         await _addToPending('update', updatedTask.toMap());
       }
 
@@ -142,27 +124,21 @@ class StorageService {
     }
   }
 
-  /// Delete a task:
-  /// Online  → delete from server + delete locally
-  /// Offline → delete locally + add to pending sync
   Future<bool> deleteTask(String taskId) async {
     try {
       final online = await _isOnline();
 
-      // Always delete locally first
       final tasks = await _loadLocalTasks();
       tasks.removeWhere((t) => t.id == taskId);
       await _saveLocalTasks(tasks);
 
       if (online) {
-        // ── Online: delete from server ──
         try {
           await _dio.delete('/tasks/$taskId');
         } catch (e) {
           await _addToPending('delete', {'id': taskId});
         }
       } else {
-        // ── Offline: add to pending sync ──
         await _addToPending('delete', {'id': taskId});
       }
 
@@ -172,7 +148,85 @@ class StorageService {
     }
   }
 
-  /// Clear all tasks
+  Future<bool> toggleTaskCompletion(String taskId, bool isCompleted, String? completedAt) async {
+    try {
+      final online = await _isOnline();
+
+      if (online) {
+        try {
+          await _dio.patch('/tasks/$taskId/complete', data: {
+            'isCompleted': isCompleted,
+            'completedAt': completedAt,
+          });
+        } catch (e) {
+          await _addToPending('toggleComplete', {
+            'id': taskId,
+            'isCompleted': isCompleted,
+            'completedAt': completedAt,
+          });
+        }
+      } else {
+        await _addToPending('toggleComplete', {
+          'id': taskId,
+          'isCompleted': isCompleted,
+          'completedAt': completedAt,
+        });
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> toggleStar(String taskId, bool isStarred) async {
+    try {
+      final online = await _isOnline();
+
+      if (online) {
+        try {
+          await _dio.patch('/tasks/$taskId/star', data: {'isStarred': isStarred});
+        } catch (e) {
+          await _addToPending('toggleStar', {'id': taskId, 'isStarred': isStarred});
+        }
+      } else {
+        await _addToPending('toggleStar', {'id': taskId, 'isStarred': isStarred});
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> toggleSubTask(String taskId, String subTaskId, bool isCompleted) async {
+    try {
+      final online = await _isOnline();
+
+      if (online) {
+        try {
+          await _dio.patch('/tasks/$taskId/subtasks/$subTaskId', data: {'isCompleted': isCompleted});
+        } catch (e) {
+          await _addToPending('toggleSubTask', {
+            'taskId': taskId,
+            'subTaskId': subTaskId,
+            'isCompleted': isCompleted,
+          });
+        }
+      } else {
+        await _addToPending('toggleSubTask', {
+          'taskId': taskId,
+          'subTaskId': subTaskId,
+          'isCompleted': isCompleted,
+        });
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> clearAllTasks() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -196,8 +250,7 @@ class StorageService {
         try {
           final response = await _dio.get('/goals');
           if (response.statusCode == 200) {
-            final Map<String, dynamic> map =
-                response.data['data']['goals'];
+            final Map<String, dynamic> map = response.data['data']['goals'];
             final goals = map.map((k, v) => MapEntry(k, v as int));
             await _saveLocalGoals(goals);
             return goals;
@@ -220,7 +273,6 @@ class StorageService {
 
       if (online) {
         try {
-          // Find which category changed and update it
           for (final entry in goals.entries) {
             await _dio.post('/goals', data: {
               'category': int.parse(entry.key),
@@ -232,6 +284,26 @@ class StorageService {
         }
       } else {
         await _addToPending('saveGoals', goals);
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> deleteGoal(int category) async {
+    try {
+      final online = await _isOnline();
+
+      if (online) {
+        try {
+          await _dio.delete('/goals/$category');
+        } catch (e) {
+          await _addToPending('deleteGoal', {'category': category});
+        }
+      } else {
+        await _addToPending('deleteGoal', {'category': category});
       }
 
       return true;
@@ -275,8 +347,7 @@ class StorageService {
     }
   }
 
-  Future<void> saveGamification(
-      int streak, int progress, String lastCompleted) async {
+  Future<void> saveGamification(int streak, int progress, String lastCompleted) async {
     try {
       await _saveLocalGamification(streak, progress, lastCompleted);
 
@@ -308,7 +379,7 @@ class StorageService {
   }
 
   // ══════════════════════════════════════════════════════════
-  // PENDING SYNC — what to send when internet comes back
+  // PENDING SYNC
   // ══════════════════════════════════════════════════════════
 
   Future<void> _addToPending(String action, dynamic data) async {
@@ -350,6 +421,22 @@ class StorageService {
             case 'delete':
               await _dio.delete('/tasks/${data['id']}');
               break;
+            case 'toggleComplete':
+              await _dio.patch('/tasks/${data['id']}/complete', data: {
+                'isCompleted': data['isCompleted'],
+                'completedAt': data['completedAt'],
+              });
+              break;
+            case 'toggleStar':
+              await _dio.patch('/tasks/${data['id']}/star', data: {
+                'isStarred': data['isStarred'],
+              });
+              break;
+            case 'toggleSubTask':
+              await _dio.patch(
+                  '/tasks/${data['taskId']}/subtasks/${data['subTaskId']}',
+                  data: {'isCompleted': data['isCompleted']});
+              break;
             case 'saveGoals':
               for (final entry in (data as Map).entries) {
                 await _dio.post('/goals', data: {
@@ -358,17 +445,18 @@ class StorageService {
                 });
               }
               break;
+            case 'deleteGoal':
+              await _dio.delete('/goals/${data['category']}');
+              break;
             case 'gamification':
               await _dio.put('/gamification', data: data);
               break;
           }
         } catch (e) {
-          // If still failing keep it for next sync
           failedItems.add(item);
         }
       }
 
-      // Save only the ones that failed
       await prefs.setString(_pendingSyncKey, json.encode(failedItems));
     } catch (e) {
       return;

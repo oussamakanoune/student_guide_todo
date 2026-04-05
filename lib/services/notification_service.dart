@@ -11,21 +11,21 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
-  Future<void> initialize() async {
-    tz.initializeTimeZones();
+Future<void> initialize() async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Africa/Algiers')); // 🔥 أضف السطر ده
 
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings androidSettings =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings settings =
-        InitializationSettings(android: androidSettings);
+  const InitializationSettings settings =
+      InitializationSettings(android: androidSettings);
 
-    await _plugin.initialize(
-      settings: 
-      settings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) async {},
-    );
-  }
+  await _plugin.initialize(
+    settings: settings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) async {},
+  );
+}
 
   Future<void> requestPermission() async {
     await _plugin

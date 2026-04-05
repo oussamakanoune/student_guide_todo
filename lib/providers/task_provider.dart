@@ -3,7 +3,8 @@ import '../models/task_model.dart';
 import '../services/storage_service.dart';
 import 'package:uuid/uuid.dart';
 import '../services/notification_service.dart';
-// \u2500\u2500\u2500 Sort Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+// ─── Sort Options ─────────────────────────────────────────────────────────────
 
 enum SortOption {
   createdAt,
@@ -30,7 +31,7 @@ extension SortOptionExtension on SortOption {
   }
 }
 
-// \u2500\u2500\u2500 Filter Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Filter Options ───────────────────────────────────────────────────────────
 
 enum FilterOption { all, active, completed, starred, overdue, today }
 
@@ -55,22 +56,22 @@ extension FilterOptionExtension on FilterOption {
   String get emoji {
     switch (this) {
       case FilterOption.all:
-        return '\ud83d\udccb';
+        return '📋';
       case FilterOption.active:
-        return '\u23f3';
+        return '⏳';
       case FilterOption.completed:
-        return '\u2705';
+        return '✅';
       case FilterOption.starred:
-        return '\u2b50';
+        return '⭐';
       case FilterOption.overdue:
-        return '\ud83d\udd25';
+        return '🔥';
       case FilterOption.today:
-        return '\ud83d\udcc5';
+        return '📅';
     }
   }
 }
 
-// \u2500\u2500\u2500 Task Provider \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Task Provider ────────────────────────────────────────────────────────────
 
 class TaskProvider extends ChangeNotifier {
   final StorageService _storageService;
@@ -86,10 +87,8 @@ class TaskProvider extends ChangeNotifier {
   Map<String, int> _weeklyGoals = {};
 
   int _streak = 0;
-
-
-int _progress = 0;
-int get progress => _progress;
+  int _progress = 0;
+  int get progress => _progress;
   String _lastCompletedDate = '';
 
   int get streak => _streak;
@@ -103,7 +102,7 @@ int get progress => _progress;
   }
 
   String get progressLevel {
-    if (_progress  < 50) return 'Beginner 🌱';
+    if (_progress < 50) return 'Beginner 🌱';
     if (_progress < 150) return 'Student 📚';
     if (_progress < 300) return 'Scholar 🎓';
     if (_progress < 500) return 'Expert ⭐';
@@ -139,16 +138,18 @@ int get progress => _progress;
     _weeklyGoals.remove(category.index.toString());
     notifyListeners();
     await _storageService.saveGoals(_weeklyGoals);
+    // ─── بعث للـ backend ───
+    await _storageService.deleteGoal(category.index);
   }
 
-  // \u2500\u2500\u2500 Constructor \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Constructor ──────────────────────────────────────────────────────────
 
   TaskProvider({StorageService? storageService})
       : _storageService = storageService ?? StorageService() {
     _loadTasks();
   }
 
-  // \u2500\u2500\u2500 Getters \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Getters ──────────────────────────────────────────────────────────────
 
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
@@ -161,7 +162,7 @@ int get progress => _progress;
   List<Task> get filteredTasks {
     List<Task> result = List.from(_tasks);
 
-// \u2500\u2500 Apply filter \u2500\u2500
+    // ── Apply filter ──
     switch (_activeFilter) {
       case FilterOption.all:
         break;
@@ -182,12 +183,12 @@ int get progress => _progress;
         break;
     }
 
-// \u2500\u2500 Apply category filter \u2500\u2500
+    // ── Apply category filter ──
     if (_selectedCategory != null) {
       result = result.where((t) => t.category == _selectedCategory).toList();
     }
 
-// \u2500\u2500 Apply search \u2500\u2500
+    // ── Apply search ──
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase();
       result = result.where((t) {
@@ -197,7 +198,7 @@ int get progress => _progress;
       }).toList();
     }
 
-// \u2500\u2500 Apply sort \u2500\u2500
+    // ── Apply sort ──
     result.sort((a, b) {
       int comparison = 0;
       switch (_sortOption) {
@@ -228,7 +229,7 @@ int get progress => _progress;
       return _sortAscending ? comparison : -comparison;
     });
 
-// \u2500\u2500 Always push completed tasks to bottom \u2500\u2500
+    // ── Always push completed tasks to bottom ──
     if (_activeFilter == FilterOption.all ||
         _activeFilter == FilterOption.active) {
       final active = result.where((t) => !t.isCompleted).toList();
@@ -239,7 +240,7 @@ int get progress => _progress;
     return result;
   }
 
-  // \u2500\u2500\u2500 Statistics \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Statistics ───────────────────────────────────────────────────────────
 
   int get totalTasks => _tasks.length;
   int get completedTasks => _tasks.where((t) => t.isCompleted).length;
@@ -269,7 +270,7 @@ int get progress => _progress;
     return map;
   }
 
-  // \u2500\u2500\u2500 Data Loading \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Data Loading ─────────────────────────────────────────────────────────
 
   Future<void> _loadTasks() async {
     _isLoading = true;
@@ -298,13 +299,14 @@ int get progress => _progress;
     }
   }
 
-  // \u2500\u2500\u2500 CRUD Operations \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── CRUD Operations ──────────────────────────────────────────────────────
 
   Future<void> addTask(Task task) async {
     _tasks.insert(0, task);
     notifyListeners();
-    await _saveTasks();
-     await NotificationService().scheduleTaskNotification(task);
+    // ─── بعث للـ backend ───
+    await _storageService.addTask(task);
+    await NotificationService().scheduleTaskNotification(task);
   }
 
   Future<void> updateTask(Task updatedTask) async {
@@ -312,42 +314,50 @@ int get progress => _progress;
     if (index != -1) {
       _tasks[index] = updatedTask;
       notifyListeners();
-      await _saveTasks();
-       await NotificationService().cancelTaskNotification(updatedTask.id);
-    await NotificationService().scheduleTaskNotification(updatedTask);
+      // ─── بعث للـ backend ───
+      await _storageService.updateTask(updatedTask);
+      await NotificationService().cancelTaskNotification(updatedTask.id);
+      await NotificationService().scheduleTaskNotification(updatedTask);
     }
   }
 
   Future<void> deleteTask(String taskId) async {
-     await NotificationService().cancelTaskNotification(taskId);
+    await NotificationService().cancelTaskNotification(taskId);
     _tasks.removeWhere((t) => t.id == taskId);
     notifyListeners();
-    await _saveTasks();
+    // ─── بعث للـ backend ───
+    await _storageService.deleteTask(taskId);
   }
 
   Future<void> toggleTaskCompletion(String taskId) async {
     final index = _tasks.indexWhere((t) => t.id == taskId);
     if (index != -1) {
       final task = _tasks[index];
+      final newIsCompleted = !task.isCompleted;
+      final completedAt = newIsCompleted ? DateTime.now().toIso8601String() : null;
+
       _tasks[index] = task.copyWith(
-        isCompleted: !task.isCompleted,
-        completedAt: !task.isCompleted ? DateTime.now() : null,
-        clearCompletedAt: task.isCompleted,
+        isCompleted: newIsCompleted,
+        completedAt: newIsCompleted ? DateTime.now() : null,
+        clearCompletedAt: !newIsCompleted,
       );
       notifyListeners();
+
+      // ─── بعث للـ backend ───
+      await _storageService.toggleTaskCompletion(taskId, newIsCompleted, completedAt);
       await _saveTasks();
-      await _updateGamification(_tasks[index].isCompleted);
+      await _updateGamification(newIsCompleted);
       await _handleRecurring(_tasks[index]);
-       if (_tasks[index].isCompleted) {
+
+      if (newIsCompleted) {
         await NotificationService().cancelTaskNotification(taskId);
       }
-
     }
   }
 
   Future<void> _updateGamification(bool taskCompleted) async {
     if (!taskCompleted) return;
-_progress += 10;
+    _progress += 10;
     final today = DateTime.now().toIso8601String().substring(0, 10);
     if (_lastCompletedDate != today) {
       final yesterday = DateTime.now()
@@ -362,48 +372,52 @@ _progress += 10;
       _lastCompletedDate = today;
     }
     notifyListeners();
-    await _storageService.saveGamification(
-        _streak, _progress, _lastCompletedDate);
-  }
-Future<void> _handleRecurring(Task task) async {
-  if (!task.isCompleted) return;
-  if (task.recurringType == RecurringType.none) return;
-  if (task.dueDate == null) return;
-
-  DateTime nextDate;
-  switch (task.recurringType) {
-    case RecurringType.daily:
-      nextDate = task.dueDate!.add(const Duration(days: 1));
-      break;
-    case RecurringType.weekly:
-      nextDate = task.dueDate!.add(const Duration(days: 7));
-      break;
-    case RecurringType.monthly:
-      nextDate = DateTime(
-        task.dueDate!.year,
-        task.dueDate!.month + 1,
-        task.dueDate!.day,
-      );
-      break;
-    default:
-      return;
+    await _storageService.saveGamification(_streak, _progress, _lastCompletedDate);
   }
 
-  final newTask = task.copyWith(
-    id: const Uuid().v4(),
-    isCompleted: false,
-    completedAt: null,
-    dueDate: nextDate,
-    clearCompletedAt: true,
-  );
-  await addTask(newTask);
-}
+  Future<void> _handleRecurring(Task task) async {
+    if (!task.isCompleted) return;
+    if (task.recurringType == RecurringType.none) return;
+    if (task.dueDate == null) return;
+
+    DateTime nextDate;
+    switch (task.recurringType) {
+      case RecurringType.daily:
+        nextDate = task.dueDate!.add(const Duration(days: 1));
+        break;
+      case RecurringType.weekly:
+        nextDate = task.dueDate!.add(const Duration(days: 7));
+        break;
+      case RecurringType.monthly:
+        nextDate = DateTime(
+          task.dueDate!.year,
+          task.dueDate!.month + 1,
+          task.dueDate!.day,
+        );
+        break;
+      default:
+        return;
+    }
+
+    final newTask = task.copyWith(
+      id: const Uuid().v4(),
+      isCompleted: false,
+      completedAt: null,
+      dueDate: nextDate,
+      clearCompletedAt: true,
+    );
+    await addTask(newTask);
+  }
+
   Future<void> toggleStarred(String taskId) async {
     final index = _tasks.indexWhere((t) => t.id == taskId);
     if (index != -1) {
       final task = _tasks[index];
-      _tasks[index] = task.copyWith(isStarred: !task.isStarred);
+      final newIsStarred = !task.isStarred;
+      _tasks[index] = task.copyWith(isStarred: newIsStarred);
       notifyListeners();
+      // ─── بعث للـ backend ───
+      await _storageService.toggleStar(taskId, newIsStarred);
       await _saveTasks();
     }
   }
@@ -412,14 +426,18 @@ Future<void> _handleRecurring(Task task) async {
     final taskIndex = _tasks.indexWhere((t) => t.id == taskId);
     if (taskIndex != -1) {
       final task = _tasks[taskIndex];
+      bool newIsCompleted = false;
       final updatedSubTasks = task.subTasks.map((s) {
         if (s.id == subTaskId) {
-          return s.copyWith(isCompleted: !s.isCompleted);
+          newIsCompleted = !s.isCompleted;
+          return s.copyWith(isCompleted: newIsCompleted);
         }
         return s;
       }).toList();
       _tasks[taskIndex] = task.copyWith(subTasks: updatedSubTasks);
       notifyListeners();
+      // ─── بعث للـ backend ───
+      await _storageService.toggleSubTask(taskId, subTaskId, newIsCompleted);
       await _saveTasks();
     }
   }
@@ -438,7 +456,7 @@ Future<void> _handleRecurring(Task task) async {
     await _saveTasks();
   }
 
-  // \u2500\u2500\u2500 Filter & Sort \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Filter & Sort ────────────────────────────────────────────────────────
 
   void setSearchQuery(String query) {
     _searchQuery = query;
@@ -474,7 +492,7 @@ Future<void> _handleRecurring(Task task) async {
     notifyListeners();
   }
 
-  // \u2500\u2500\u2500 Refresh \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ─── Refresh ──────────────────────────────────────────────────────────────
 
   Future<void> refresh() async {
     await _loadTasks();
